@@ -1,0 +1,61 @@
+For a data period (a day), break it up into 10 pieces. 
+Sample the data at those points
+
+Data here means value * volume
+Or
+Value change / avg volume in that time period: 
+
+0 1 2 3 4 5 6 7 8 9
+
+
+to obtain 9 slopes
+
+Sum up all the positive slopes
+Sum up all the negative slopes
+
+Slope = pos + neg	; Slope shows the average direction
+Distance = pos + abs(neg)	; Used to calculate the extreme directions
+
+
+higher distance means more instability, lower means stability. Distance is the equivalent of velocity. It's just a quantity, not a vector quantity...
+
+Higher distance = more instability, less confidence
+If the actual slope matches the distance, then the direction is definite...
+
+for a small data set: (assuming volume and all other factors stayed the same...)
+
+100 110 120 130
+Slope:
+10 10 10
+
+CombinedSlope: 30
+Distance: 30
+avg slope: 10
+
+30-30: 0
+
+Max Slope: avgSlope + 0
+minSlope: avgSlope - 0
+
+120 110 120 130
+Slope:
+-10 10 10
+
+Combined: 20 (easily found by doing last - first)
+Distance: 30
+avg: 2/3 = 6.67
+
+instability = 30 - 20 = 10
+
+max Slope: 16.67
+min Slope: -4.67
+avg Slope: 6
+
+
+next max: 146.67
+*next probable: 136
+next min: 125.33
+
+Look at next probable...
+Use next min as risk reduction...
+

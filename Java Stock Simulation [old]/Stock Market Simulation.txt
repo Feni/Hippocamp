@@ -1,0 +1,12 @@
+Stock Market Simulation
+Weights of connections between stocks. Rise in one will cause ____ amount rise/fall in the other. 
+Time of year (month) also affects stock prises. This is given a cost value as well. 
+Time of day also affects stock prises. This is given a cost value. 
+
+All of the cost values are used to compute an approximate value of the stock in the future. The slopes, the rises and the falls are predicted using relative value. The value in november will be 3x the value in february, 2x the value in march, 1.87x the value in april ect. All of these data numbers are computed and a median number is selected with time further away given a less priority weight than recent time. This will account for all of the hidden information and lets you predict the market with a very high accuracy. 
+
+Since there is a $8 fee with each transaction, the optimal solution would be one large-scale buying and one large-scale selling of each company's stocks. The profit must be greater than $10, so you end up with atleast 2 dollars. It should maybey also be 18 dollars, so that you can retrade with it and still make a profit.... 
+
+Hoovers.com/free
+
+Walls, high and low, will allow you to know how much resistance it's facing. These show price levels that are hard to break, like dow making it over 14,000 or under 10,000. Daily increase rates, in percentages, can also be graphed and they can have their own walls defined. 1 week, 32 week and 52 week wall analysis can also be used to make the figure more accurate. Combine them all to find an estimated "Bounds" that the stock will stay in in a given time period. 

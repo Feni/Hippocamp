@@ -1,0 +1,63 @@
+The Market Confidence Meter
+
+The difference between the high and the low. This is subtracted from the close and divided by the current price will show you the uncertanity of the market... Lower the fluctuation, the more confident the market. 
+GOOG
+high: 359.80
+Low: 341.41
+
+highPercentageGrowth(from open): (359.80-357)/359.80 = 0.784 %
+lowPercentageGrowth(from open): -5.11%
+
+high - low: 18.39
+
+high - Midpoint: 9.98
+Low  - Midpoint: -8.41
+avg of those two: 0.74
+
+(18.39+(18.39+0.74)/2)/2 = 13.9775
+aproximately 14
+which is aproximately the slope for the day. 
+
+
+Open: 357
+Close: 342.64
+Midpoint: 357+342.64/2 = 349.82
+Low - Open: -15.59
+High - Open: 2.80
+
+High change + low Change = -12.79
+open + -12.79 = 344.21
+
+Low - Close:-1.23
+High - Close: 17.16
+close + 15.93 (combined high low change factor) = 358.57
+
+
+The slope for the two "Net" points of the day? (close - open net points) 358.57-344.21 = 14.36
+
+
+
+This value, 344.21, is the optimal value for today. To find the confidence level, do
+(2 *344.21) - (open (357)+ close(342.64))
+= 688.42 - 699.64
+= -11.22
+
+this is very close to the value for the high change and the low change. Map this value for multiple days and use the correlation there to find the path of the market for the net day and calculate the low and high for the day based upon that. 
+
+The confidence factor will determine the height of the peak or low. The factor can either be negative or positive. 
+
+More fluctuations, meaning a higher percentage difference between the high and the low means a really bad confindence level of the market. 
+
+Okey.. What am I finding here??
+The height of the rise or fall from the opening price (AKA, something close to last day's closing price...)
+
+Ok. So knowing the opening price and the confidence index of 14, calculate an approximate value of the closing price. Easy enough... 
+Open = 357
+confidence index: -14
+Close: 357-14: 343. VERY close to 342.64 predicted earlier....
+
+The final equations:
+Find the slope of the two net points of the day. close - open net points. 
+m = (close + ((low - close) + (high - close))) - (open + ((low - open) + (high - open)))
+
+closing price = open + m

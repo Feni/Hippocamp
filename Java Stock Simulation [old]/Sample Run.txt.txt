@@ -1,0 +1,125 @@
+
+/*
+--------------------Configuration: <Default>--------------------
+Stock Manager, Version 1.0
+By Feni Varughese
+
+buy
+What ?goog
+How many : 196
+Cost: 0.0
+Cost After67161.36
+ GOOG 342.66 :: Cost 67161.36 Shares 196
+buy
+What ?bbda
+How many : 3334250
+Cost: 0.0
+Cost After5334.8
+ BBDA 0.0016 :: Cost 5334.8 Shares 3334250
+buy
+What ?usb-j
+How many : 915
+Cost: 0.0
+Cost After16049.099999999999
+ USB-J 17.54 :: Cost 16049.099999999999 Shares 915
+buy
+What ?intc
+How many : 500
+Cost: 0.0
+Cost After6605.0
+ INTC 13.21 :: Cost 6605.0 Shares 500
+buy
+What ?wdc
+How many : 310
+Cost: 0.0
+Cost After4848.400000000001
+ WDC 15.64 :: Cost 4848.400000000001 Shares 310
+summary
+
+Remainder: 1.340000000001055
+ GOOG 342.66 :: Cost 67161.36 Shares 196
+ BBDA 0.0016 :: Cost 5334.8 Shares 3334250
+ USB-J 17.54 :: Cost 16049.099999999999 Shares 915
+ INTC 13.21 :: Cost 6605.0 Shares 500
+ WDC 15.64 :: Cost 4848.400000000001 Shares 310
+
+update
+What ?goog
+New Price ?375
+update
+What ?bbda
+New Price ?0.0029
+update
+What ?usb-j
+New Price ?25
+update
+What ?intc
+New Price ?18
+update
+What ?intc
+New Price ?15
+update
+What ?wdc
+New Price ?18
+w3l
+sell
+What ?goog
+How many : 1
+Profit: 375.0
+Cost 67161.36
+New Cost: 67161.36
+ GOOG 375.0 :: Cost 67161.36 Shares 195
+summary
+
+Remainder: 376.34000000000106
+ GOOG 375.0 :: Cost 67161.36 Shares 195
+ BBDA 0.0029 :: Cost 5334.8 Shares 3334250
+ USB-J 25.0 :: Cost 16049.099999999999 Shares 915
+ INTC 15.0 :: Cost 6605.0 Shares 500
+ WDC 18.0 :: Cost 4848.400000000001 Shares 310
+
+sell
+What ?goog
+How many : 195
+Profit: 5963.639999999999
+Cost 67161.36
+New Cost: -5963.639999999999
+ GOOG 375.0 :: Cost -5963.639999999999 Shares 0
+sell
+What ?bbda
+How many : 3334250
+Profit: 4334.524999999999
+Cost 5334.8
+New Cost: -4334.524999999999
+ BBDA 0.0029 :: Cost -4334.524999999999 Shares 0
+sell
+What ?usb-j
+How many : 915
+Profit: 6825.9000000000015
+Cost 16049.099999999999
+New Cost: -6825.9000000000015
+ USB-J 25.0 :: Cost -6825.9000000000015 Shares 0
+sell
+What ?intc
+How many : 500
+Profit: 895.0
+Cost 6605.0
+New Cost: -895.0
+ INTC 15.0 :: Cost -895.0 Shares 0
+sell
+What ?wdc
+How many : 310
+Profit: 731.5999999999995
+Cost 4848.400000000001
+New Cost: -731.5999999999995
+ WDC 18.0 :: Cost -731.5999999999995 Shares 0
+summary
+
+Remainder: 119125.665
+ GOOG 375.0 :: Cost -5963.639999999999 Shares 0
+ BBDA 0.0029 :: Cost -4334.524999999999 Shares 0
+ USB-J 25.0 :: Cost -6825.9000000000015 Shares 0
+ INTC 15.0 :: Cost -895.0 Shares 0
+ WDC 18.0 :: Cost -731.5999999999995 Shares 0
+
+*/
