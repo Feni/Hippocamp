@@ -10,9 +10,20 @@ public class StockAnalysis {
 	
 	static double money = 100000;
 	static int stocks = 0;
+	static double avgHoldingPrice = 0;
 	
 	public StockAnalysis(){
 	}
+	
+	// Average: 1, 2 = 1.5
+	// Average: 1, 2, 3 = 2
+	// = Average (1, 2)/3 + 3/2
+	
+	// Average: 2, 3 = 2.5
+	// Average: 2, 3, 4 = 3
+	// = ((2.5 * 2) + 4)/3
+	// = ((oldAverage * oldSize) + newValue)/newSize
+	// Note: newSize = oldSize+1
 	
 	public static void parseGoog(String str){
 		// Sep 2, 2010	25.54	26.01	25.51	25.88	6,442,930
@@ -108,60 +119,101 @@ public class StockAnalysis {
 			String line = ""; 
 			while( (line=scan.readLine()) != null && !line.equals(""))
 				sa.parseExcel(line);
+			
+			Grapher graph = new Grapher();
+			new Thread(graph).start();
 //			while(line != null && !(line = scan.readLine()).equals(""))
 //				sa.parseExcel(line);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-
-		sa.dumbTrade();
 	}
 	
 	public static void dumbTrade(){
+		System.out.println("Dumb trade");
 		double starting = money;
 		Collections.sort(priceHistory);	// Newest = index 0. Oldest = size...
 		System.out.println(priceHistory);
 		// Just trade blindley...
 		// Ignore the very last one...
 		for(int k = priceHistory.size()-2; k >= 0; k--){
+			avgHoldingPrice += (avgHoldingPrice*0.0001618);	// Expect a growth... 
+			
 			Stock s = priceHistory.get(k);
 			double flag = s.getPrediction();
-			System.out.println("Flag: "+flag);
-			if(flag < 0){
+			//System.out.println("Flag: "+flag);
+			// If it's telling us to sell and if the sale would be profitable...
+			if(flag < -25 && s.price > avgHoldingPrice){	
 				flag = Math.abs(flag);
-				sell(s.price, (int) Math.floor( stocks*(flag/100) ) );
-			}
-			else{
+				int amount = (int) Math.floor(stocks * flag/100);	// Number of stocks to sell...
+				if(avgHoldingPrice != 0)	// More profit, sell more...
+					 amount *= (s.price/avgHoldingPrice)*100;
+				amount = (int)Math.min(stocks, amount);
+				sell(s.price, amount);
+
+			}	// If it's telling us to buy and the price would lower our averageHoldingPrice. 
+			else if(flag > 25 && (stocks == 0 || avgHoldingPrice == 0 || s.price <= avgHoldingPrice)){
 				flag = Math.abs(flag);
-				buy(s.price, (int) (Math.floor((money*flag/100)) / s.price ));
+				// divide by 2, so that you don't spend more than half the money at a time...
+				int amount = (int) (Math.floor(( money*flag/100) ));	 
+				amount/=s.price;
+				amount = (int)Math.min(money/s.price/2, amount);
+				buy(s.price, amount) ;
 			}
 		}
 		// Money + Assets (stocks * Current price)
 		double netWorth = money + (stocks * priceHistory.get(0).price);
 		System.out.println("Ended with $"+money+", Stocks: "+stocks+" = networth: "+netWorth);
+		System.out.println("Stocks have an avg holding price of : "+avgHoldingPrice+" with current worth "+priceHistory.get(0).price);
 		double percentGain = ((netWorth-starting)/starting)*100;
 		System.out.println("That's a profit/loss of : "+percentGain+"%");
 	}
 	
 	public static void buy(double price, int amount){
-		if(price * amount <= money){
-			money -= price*amount;
-			stocks += amount; 
+		if(amount > 0){
+			System.out.println("Buying: "+amount+" stocks, at $"+price);
+			if(price * amount <= money){
+				// newAverage = ((oldAverage * oldSize) + newValue)/newSize 
+				// Re-Compute the average value of all the stocks we've bought...			
+				avgHoldingPrice = ((avgHoldingPrice * stocks) + (price*amount))/(stocks+amount); 
+				money -= price*amount;
+				stocks += amount; 
+			}
+			else{
+				System.out.println("Can't buy... you're broke...");
+	//			throw new IllegalArgumentException("Error; System threw a you're broke Exception");
+			}
 		}
-		else
-			System.out.println("Can't buy... you're broke...");
-//			throw new IllegalArgumentException("Error; System threw a you're broke Exception");
 	}
 	
 	public static void sell(double price, int amount){
-		if(amount <= stocks){
-			money += amount * price;
-			stocks-=amount;
+		if(amount > 0){
+			System.out.println("Selling: "+amount+" stocks, at $"+price);
+			if(amount <= stocks){
+				// Downscale the average so that we can buy and sell profitably at a new level...
+				
+				// newAverage = ((oldAverage * oldSize) + newValue)/newSize 
+				// Re-Compute the average value of all the stocks we've bought...
+				
+				// So I bought 100 stocks at an average price of 3 dollars. I sold 50 stocks for 6... 
+				// Now the average price is 0, because we already made back the moeny we spent...
+				// average = (totalPriceOfCurrentHoldings - moneyMade) / (stocksRemaining)
+				// Note: MoneyMade = total. not profit...
+				// Example: (3*100 - 50*6)/50
+				
+				double profit = (price*amount) - (avgHoldingPrice * amount); 
+				System.out.println("made a profit of: "+profit);
+				// Once we've made a profit, reset at a little less than the current price...
+				avgHoldingPrice = Math.max(price*0.75,((avgHoldingPrice * stocks) - (price*amount))/(stocks-amount));
+				
+				money += amount * price;
+				stocks-=amount;
+			}
+			else
+				System.out.println("Can't sell... you don't have anything to sell");
+				//throw new IllegalArgumentException("Error; System threw a you're aint have that many stocks exception");
 		}
-		else
-			System.out.println("Can't sell... you don't have anything to sell");
-			//throw new IllegalArgumentException("Error; System threw a you're aint have that many stocks exception");
 	}
 	
 	public static int getMonthAsNum(String str){
@@ -223,99 +275,3 @@ public class StockAnalysis {
 	}
 }
 
-class Stock implements Comparable{
-	int year, day, month; 
-	int date;
-	float open, high, low, close;
-	double volume;
-	double price;
-	double efficiency;
-	
-	public Stock(int y, int m, int d, float o,float h,float l,float c,double v){
-		year = y;
-		day = d;
-		month = m;
-		open = o;
-		high = h;
-		low = l;
-		close = c;
-		volume = v;
-		
-		date = year;
-		date = (date * 100) + month;
-		date = (date * 100) + day;
-//		System.out.println("Date from " + year + " "+month+" "+day+" = "+date);
-		
-		price = (open + high + low + close) / 4;
-		
-		efficiency = 100;
-		if(high-low != 0)
-			efficiency = Math.abs(close-open)/(high-low) * 100;
-	}
-	// newer returns as higher...
-	public int compareTo(Object o) {
-		return ((Integer)((Stock)o).date).compareTo(date); 
-	}
-	
-	// Return the change in percentage...
-	public double getPriceChange(){
-		double change = Double.NaN;
-		int myIndex = StockAnalysis.priceHistory.indexOf(this);
-		if(myIndex != StockAnalysis.priceHistory.size()-1){
-			Stock yesterday = StockAnalysis.priceHistory.get(myIndex+1);
-			change = ((price/yesterday.price)-1)*100;
-		}
-		else
-			System.out.println(this+" was left out");
-		return change;
-	}
-	public double getVolumeChange(){
-		double change = Double.NaN;
-		int myIndex = StockAnalysis.priceHistory.indexOf(this);
-		if(myIndex != StockAnalysis.priceHistory.size()-1){
-			Stock yesterday = StockAnalysis.priceHistory.get(myIndex+1);
-			change = ((volume/yesterday.volume)-1)*100;
-		}
-		return change;
-	}
-	public double getPriceDeviation(){
-		return ((volume/StockAnalysis.getAveragePrice())-1)*100;		
-	}
-	public double getVolumeDeviation(){
-		return ((volume/StockAnalysis.getAverageVolume())-1)*100;		
-	}
-	public double getMomentum(){
-		// Get the absolute volume change in full prespective of current and all time... also change it back to a decimal from a percentage...		
-		double volDiff = (getVolumeChange() + getVolumeDeviation())/2/100;
-		double priceChange = (getPriceChange()+getPriceDeviation())/2/100;
-//		System.out.println("Vol difference : "+volDiff);
-//		System.out.println("PriceChange : +priceChange");
-//		System.out.println("Momentum : "+volDiff*priceChange*100);
-		
-		return (volDiff * priceChange) * 100;
-	}
-	public double getPredictedMomentum(){
-		return (getMomentum() * (efficiency/100))*100;
-	}
-	
-	public double getWeightedMomentum(){
-		return (getMomentum()/StockAnalysis.getAbsAverageMomentum())*100;
-	}
-	// Returns the number of stocks you should buy. 100 being max. -100 being sell all...
-	public double getPrediction(){
-		
-		double buy = 0.0;
-		double momentum = getWeightedMomentum();
-		if(momentum < 0)
-			momentum = Math.max(momentum, -100);
-		else
-			momentum = Math.min(momentum, 100);
-//		System.out.println("momentum " +momentum+" efficiency "+efficiency);		
-		buy = momentum * (efficiency/100);
-		return buy;
-	}
-	
-	public String toString(){
-		return " " +date+"("+price+","+volume+") ";
-	}
-}
