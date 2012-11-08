@@ -1,0 +1,110 @@
+import csv
+import time
+import datetime
+
+
+stockReader = csv.reader(open('GOOG.csv', 'rb'), delimiter=',', quotechar='|')
+
+allPrices = []
+
+for row in stockReader:
+	allPrices.append([row[0], float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5])])  
+
+
+# print str(allPrices)
+
+#for i in range(1, len(allPrices))
+#	(date,opn,high,low,cls,vol) = allPrices[i]
+
+def normalizePrize(opn, high, low, cls):
+	# The normalized value must be greater than the open but less than the close. 
+	# It shouldn't be swayed too much by the high or the low... 
+	# For now, just return the average
+	normalized = (opn + high + low + cls)/ 4
+	return normalized
+
+def normalizeAllPrices(allPrices):
+	rtrn = []
+	for date,opn,high,low,cls,vol in allPrices:
+		rtrn.append([date, normalizePrize(opn, high, low, cls), vol])
+	return rtrn
+
+DAY_OF_WEEK = 0
+WEEK = 1
+
+def getKey(orderBy, t):
+	if orderBy == DAY_OF_WEEK:
+		key = t.tm_wday
+	if orderBy == WEEK:
+		datetime.date(t.tm_year, t.tm_mon, t.tm_mday).isocalendar()[1]
+		key = week_number
+	return key
+
+
+# Bucket by day of the week...
+def order(allPrices, normalized=False, orderBy = DAY_OF_WEEK):
+	years = {}
+	for date,opn,high,low,cls,vol in allPrices:
+		t = time.strptime(date, "%d-%b-%y")
+		if not years.has_key(t.tm_year):
+			years[t.tm_year] = {}
+		y = years[t.tm_year]
+		if not y.has_key(t.tm_mon):
+			y[t.tm_mon] = {}
+		w = y[t.tm_mon]
+
+		item = [normalizePrize(opn, high, low, cls), vol] if normalized else [opn, high, low, cls, vol]
+		key = getKey(orderBy, t)
+
+		if not w.has_key(key):
+			w[key] = []
+		w[key].append(item)
+
+		
+	return years
+
+
+# BUG!!! it calculates by the day of the week instead of the week number (i.e., average of all mondays when I meant to do average of each week.. i.e. first week, second week, ect.)
+def sumWeeklyAverage(simplePrices, buckets, orderBy = DAY_OF_WEEK):
+	years = {}
+	# The only requirement on elems is that the date must be the 0th element
+	for elems in simplePrices:
+		t = time.strptime(elems[0], "%d-%b-%y")
+		if not years.has_key(t.tm_year):
+			years[t.tm_year] = {}
+		y = years[t.tm_year]
+		if not y.has_key(t.tm_mon):
+			y[t.tm_mon] = {}
+		w = y[t.tm_mon]
+
+		key = getKey(orderBy, t)
+
+		if not w.has_key(key):
+			w[key] = [0] * (len(elems) -1)
+
+
+		totalItems = len(buckets[t.tm_year][t.tm_mon][key])	# Number of days in this week
+		#print "total items = " + str(totalItems)
+		index = 0
+		for item in elems[1::]: 	# Skip the date... don't sum that..
+			w[key][index] = w[key][index] + (item / totalItems)
+			index+=1
+	return years
+	
+
+
+buckets = order(allPrices, True)
+
+b2 = order(allPrices, False, WEEK)
+
+
+simple = normalizeAllPrices(allPrices)
+summed = sumWeeklyAverage(allPrices, b2, WEEK)
+
+
+print "All march prices = \n\n\n"
+
+print "total items = " + str(len(b2[2012][2][3])) + "   :   " + str(b2[2012][2][3])
+		
+
+print summed[2012][2]
